@@ -39,6 +39,19 @@ jobs:
         run: npm install
       - name: Build
         run: npm run client:build
+        env:
+          ZOOM_SDK_KEY: ${{ secrets.ZOOM_SDK_KEY }}
+          ZOOM_SDK_SECRET: ${{ secrets.ZOOM_SDK_SECRET }}
+          MODEL_ID: ${{ secrets.MODEL_ID }}
+          IMAGE_MODEL_ID: ${{ secrets.IMAGE_MODEL_ID }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          PINATA_GATEWAY_URL: ${{ secrets.PINATA_GATEWAY_URL }}
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_API_SECRET: ${{ secrets.PINATA_API_SECRET }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
