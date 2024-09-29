@@ -379,39 +379,19 @@ export const userIssuesControlInstruction =
     }
 
     if (result.result.kind === 'obsessionsCompleted') {
-      const playersCompletedObsessions = result.result.playerNicknames;
-      const newOtherPlayers = prev.otherPlayers.map(p => ({
-        ...p,
-        points:
-          p.points +
-          (playersCompletedObsessions.includes(p.nickname)
-            ? p.obsession.rank
-            : 0),
-      }));
-
-      if (playersCompletedObsessions.includes(prev.controlPlayer.nickname)) {
-        return Promise.resolve({
-          kind: 'bidding',
-          imageURL: generatedImageURL,
-          history: [...prev.history, result.description],
-          players: [
-            ...newOtherPlayers.map(p => ({ ...p, bidAmount: null })),
-            {
-              ...prev.controlPlayer,
-              points:
-                prev.controlPlayer.points + prev.controlPlayer.obsession.rank,
-              bidAmount: null,
-            },
-          ],
-        });
-      }
-
       return Promise.resolve({
-        kind: 'control',
+        kind: 'bidding',
         imageURL: generatedImageURL,
         history: [...prev.history, result.description],
-        otherPlayers: newOtherPlayers,
-        controlPlayer: { ...prev.controlPlayer, instruction: null },
+        players: [
+          ...prev.otherPlayers.map(p => ({ ...p, bidAmount: null })),
+          {
+            ...prev.controlPlayer,
+            points:
+              prev.controlPlayer.points + prev.controlPlayer.obsession.rank,
+            bidAmount: null,
+          },
+        ],
       });
     }
 
@@ -428,13 +408,13 @@ export const attemptSkillCheck =
 
     if (isSuccess) {
       const test = userIssuesControlInstruction(
-        `${prev.controlPlayer.nickname} succeeds the skill check`,
+        `SKILL CHECK: ${prev.controlPlayer.nickname} succeeds the skill check`,
       );
       return test(prev);
     } else {
       const newHistory = [
         ...prev.history,
-        `TODO ${prev.controlPlayer.nickname} failed the skill check`,
+        `SKILL CHECK: ${prev.controlPlayer.nickname} failed the skill check`,
       ];
       return Promise.resolve({
         kind: 'bidding',
