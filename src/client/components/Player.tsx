@@ -5,7 +5,8 @@ import { Stream, VideoPlayer, VideoQuality } from '@zoom/videosdk';
 import { Box, Card, Stack, Typography } from '@mui/joy';
 import ReactDice from 'react-dice-complete';
 import ElectricBolt from '@mui/icons-material/ElectricBolt';
-import { getPlayersFull } from '../../common/utils';
+import Star from '@mui/icons-material/Star';
+import { getPlayers, getPlayersFull } from '../../common/utils';
 
 type Props = {
   nickname: string;
@@ -24,7 +25,9 @@ const Player: FC<Props> = ({ nickname }) => {
   const playerNotInLobby =
     appState.kind !== 'waitingLobby' &&
     appState.kind !== 'pickingPeriod' &&
-    getPlayersFull(appState).find(u => u.nickname);
+    getPlayersFull(appState).find(u => u.nickname === nickname);
+
+  const isMe = nickname === appNickname;
 
   useEffect(() => {
     client.on('peer-video-state-change', () => {
@@ -74,6 +77,22 @@ const Player: FC<Props> = ({ nickname }) => {
         position: 'relative',
       }}
     >
+      {playerNotInLobby && isMe && (
+        <Card
+          sx={{
+            position: 'absolute',
+            top: '-20px',
+            left: '-20px',
+            zIndex: 2,
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'row',
+          }}
+        >
+          <span>{playerNotInLobby.points}</span>
+          <Star fontSize="small" />
+        </Card>
+      )}
       {playerInTie &&
         playerInTie.tieStatus.kind === 'tie' &&
         playerInTie.tieStatus.roll && (
@@ -135,6 +154,16 @@ const Player: FC<Props> = ({ nickname }) => {
             <Typography>{playerNotInLobby.willpower}</Typography>
           )}
         </Stack>
+        {isMe && playerNotInLobby && (
+          <Typography sx={{ marginBottom: 0 }}>
+            {`${playerNotInLobby.obsession.description}`}
+          </Typography>
+        )}
+        {isMe && playerNotInLobby && (
+          <Typography level="body-sm" sx={{ marginTop: 0 }}>
+            {`${playerNotInLobby.skills.one} | ${playerNotInLobby.skills.two}`}
+          </Typography>
+        )}
       </Card>
     </Box>
   );

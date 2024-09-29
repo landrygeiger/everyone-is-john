@@ -58,11 +58,13 @@ const Router: FC = () => {
           ))}
       </Box>
       {appState.nickname !== null && (
-        <Stack justifyContent="space-around" flexDirection="row">
+        <Stack
+          justifyContent="space-around"
+          flexDirection="row"
+          alignItems="flex-end"
+        >
           {getPlayers(appState).map(player => (
-            <div key={player.nickname}>
-              <Player nickname={player.nickname} />
-            </div>
+            <Player nickname={player.nickname} />
           ))}
         </Stack>
       )}
