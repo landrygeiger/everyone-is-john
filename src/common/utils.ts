@@ -55,6 +55,15 @@ export const getPlayers = (state: App) =>
       ? [state.controlPlayer, ...state.otherPlayers]
       : [];
 
+export const getPlayersFull = (
+  state: Exclude<App, { kind: 'waitingLobby' } | { kind: 'pickingPeriod' }>,
+) =>
+  'players' in state
+    ? state.players
+    : 'controlPlayer' in state && 'otherPlayers' in state
+      ? [state.controlPlayer, ...state.otherPlayers]
+      : [];
+
 export const namesToListStr = (names: string[]) => {
   if (names.length === 0) return '';
   if (names.length === 1) return names[0];

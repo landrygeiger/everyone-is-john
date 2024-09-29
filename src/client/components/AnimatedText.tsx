@@ -9,7 +9,6 @@ type Props = {
 
 const AnimatedText: FC<Props> = ({ keyframes, periodMs, typographyLevel }) => {
   const [index, setIndex] = useState(0);
-  const keepGoingRef = useRef(true);
 
   useEffect(() => {
     const interval = setInterval(() => {

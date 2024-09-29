@@ -4,6 +4,9 @@ import { Card, Typography } from '@mui/joy';
 import SkillSelection from './SkillSelection';
 import { StateContext } from '../State';
 import { selectKit } from '../../common/api';
+import AnimatedText from './AnimatedText';
+
+const titleKeyframes = ['Waiting', 'Waiting.', 'Waiting..', 'Waiting...'];
 
 type Props = {
   pickingState: Extract<App, { kind: 'pickingPeriod' }>;
@@ -14,11 +17,19 @@ const Picking: FC<Props> = ({ pickingState }) => {
   const doneSelecting = me.skills !== null && me.obsession !== null;
 
   return (
-    <Card>
+    <Card sx={{ width: 650 }}>
       {doneSelecting ? (
-        <Typography level="h2">
-          Waiting for everyone else to pick their skills and obsession...
-        </Typography>
+        <>
+          <AnimatedText
+            typographyLevel="h1"
+            keyframes={titleKeyframes}
+            periodMs={1000}
+          />
+          <Typography>
+            Give the other players a chance to choose their skills and
+            obsessions!
+          </Typography>
+        </>
       ) : (
         <SkillSelection
           skills={me?.skillOptions ?? []}

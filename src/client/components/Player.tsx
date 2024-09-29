@@ -2,17 +2,29 @@ import { FC, useContext, useEffect, useRef, useState } from 'react';
 import { client } from '../zoom';
 import { StateContext } from '../State';
 import { Stream, VideoPlayer, VideoQuality } from '@zoom/videosdk';
-import { Box, Card, Typography } from '@mui/joy';
+import { Box, Card, Stack, Typography } from '@mui/joy';
+import ReactDice from 'react-dice-complete';
+import ElectricBolt from '@mui/icons-material/ElectricBolt';
+import { getPlayersFull } from '../../common/utils';
 
 type Props = {
   nickname: string;
 };
 
 const Player: FC<Props> = ({ nickname }) => {
-  const { nickname: appNickname } = useContext(StateContext);
+  const { nickname: appNickname, ...appState } = useContext(StateContext);
   const streamRef = useRef<typeof Stream | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [trigger, setTrigger] = useState(0);
+
+  const playerInTie =
+    appState.kind === 'biddingTie' &&
+    appState.players.find(u => u.nickname === nickname);
+
+  const playerNotInLobby =
+    appState.kind !== 'waitingLobby' &&
+    appState.kind !== 'pickingPeriod' &&
+    getPlayersFull(appState).find(u => u.nickname);
 
   useEffect(() => {
     client.on('peer-video-state-change', () => {
@@ -56,13 +68,31 @@ const Player: FC<Props> = ({ nickname }) => {
   return (
     <Box
       my={5}
-      width="350px"
-      style={
-        {
-          // filter: 'drop-shadow(5px 5px 8px #DDDDDD)',
-        }
-      }
+      width="300px"
+      style={{
+        // filter: 'drop-shadow(5px 5px 8px #DDDDDD)',
+        position: 'relative',
+      }}
     >
+      {playerInTie &&
+        playerInTie.tieStatus.kind === 'tie' &&
+        playerInTie.tieStatus.roll && (
+          <Card
+            sx={{ position: 'absolute', top: '-100px', left: '107px', p: 1 }}
+          >
+            <ReactDice
+              numDice={1}
+              defaultRoll={playerInTie.tieStatus.roll}
+              rollDone={() => {}}
+              faceColor={'#b0d2ff'}
+              dotColor={'#ffffff'}
+              outlineColor={'#97abc4'}
+              dieSize={30}
+              outline
+              disableIndividual
+            />
+          </Card>
+        )}
       <Box
         style={{
           width: '300px',
@@ -89,12 +119,22 @@ const Player: FC<Props> = ({ nickname }) => {
       <Card
         sx={{
           marginTop: '-50px',
-          width: '350px',
+          width: '300px',
           boxSizing: 'border-box',
+          borderTopRightRadius: 0,
+          borderTopLeftRadius: 0,
           // filter: 'drop-shadow(5px 8px 12px #000000)',
         }}
       >
-        <Typography level="h3">{nickname}</Typography>
+        <Stack flexDirection="row" alignItems="center">
+          <Typography level="h3" sx={{ flexGrow: 1 }}>
+            {nickname}
+          </Typography>
+          {playerNotInLobby && <ElectricBolt fontSize="small" />}
+          {playerNotInLobby && (
+            <Typography>{playerNotInLobby.willpower}</Typography>
+          )}
+        </Stack>
       </Card>
     </Box>
   );

@@ -1,7 +1,19 @@
 import { useState } from 'react';
 import { Obsession } from '../../common/types';
-import { Box, Button, Card, Typography } from '@mui/joy';
+import {
+  Box,
+  Button,
+  Card,
+  Checkbox,
+  Stack,
+  Step,
+  StepIndicator,
+  Stepper,
+  Typography,
+} from '@mui/joy';
 import StarIcon from '@mui/icons-material/Star'; // Importing a star icon
+import Check from '@mui/icons-material/Check';
+import One from '@mui/icons-material/OneK';
 
 interface SkillSelectionGridProps {
   skills: string[];
@@ -48,7 +60,7 @@ const SkillSelection: React.FC<SkillSelectionGridProps> = ({
         {[...Array(rank)].map((_, index) => (
           <StarIcon
             key={index}
-            color={'action'} // Fill stars based on rank
+            color={'inherit'} // Fill stars based on rank
             sx={{ fontSize: 20 }} // Adjust size of stars
           />
         ))}
@@ -56,119 +68,131 @@ const SkillSelection: React.FC<SkillSelectionGridProps> = ({
     );
   };
 
+  const [step, setStep] = useState(0);
+
   return (
-    <Card sx={{ width: 650 }}>
-      <Box>
-        {/* Skills Grid */}
-        <Box mb={3}>
-          <Typography level="h3">Select Two Skills</Typography>
+    <>
+      <Stepper sx={{ width: '200px', mx: 'auto' }}>
+        <Step
+          indicator={
+            <StepIndicator
+              variant={step === 0 ? 'soft' : 'solid'}
+              color="primary"
+            />
+          }
+        >
+          Skills
+        </Step>
+        <Step indicator={<StepIndicator variant={'soft'} color="primary" />}>
+          Obsession
+        </Step>
+      </Stepper>
+      {step === 0 ? (
+        <>
+          <Typography level="h1">Skills</Typography>
+          <Typography>
+            First, choose two skills. Your choice will improve John's abilities
+            to perform actions related to those skills.
+          </Typography>
           <Box
             display="grid"
             gridTemplateColumns="repeat(auto-fill, minmax(100px, 1fr))"
             gap={2}
             mt={1}
+            sx={{
+              overflowY: 'scroll',
+              maxHeight: '300px',
+            }}
           >
             {skills.map((skill, index) => (
               <Button
                 key={index}
-                variant={selectedSkills.includes(skill) ? 'outlined' : 'plain'}
+                variant={selectedSkills.includes(skill) ? 'solid' : 'soft'}
                 onClick={() => handleSkillClick(skill)}
                 sx={{
                   cursor: 'pointer',
                   padding: '16px',
                   textAlign: 'center',
                   alignSelf: 'center',
-                  backgroundColor: selectedSkills.includes(skill)
-                    ? 'primary.softFocus' // JoyUI primary color when selected
-                    : 'background.body', // JoyUI default background
-                  border: selectedSkills.includes(skill)
-                    ? '2px solid #4caf50'
-                    : '2px solid rgba(0,0,0,0)', // Thicker success-green border
-                  '&:hover': {
-                    backgroundColor:
-                      selectedSkills.length < 2
-                        ? 'primary.hover' // JoyUI hover color when not fully selected
-                        : 'inherit', // No hover effect if two skills are selected
-                  },
-                  '&:active': {
-                    backgroundColor: selectedSkills.includes(skill)
-                      ? 'primary.active' // JoyUI active color when selected
-                      : 'primary.main', // JoyUI primary color when active
-                  },
+                  height: '80px',
                 }}
               >
-                <Typography>{skill}</Typography>
+                {skill}
               </Button>
             ))}
           </Box>
-        </Box>
-
-        {/* Obsession Grid */}
-        <Box mb={3}>
-          <Typography level="h3">Select One Obsession</Typography>
+          <Button
+            sx={{ alignSelf: 'flex-right', marginLeft: 'auto', marginTop: 2 }}
+            onClick={() => setStep(i => i + 1)}
+            disabled={selectedSkills.length < 2}
+          >
+            Next
+          </Button>
+        </>
+      ) : (
+        <>
+          <Typography level="h1">Obsession</Typography>
+          <Typography>
+            Next, choose an obsession. Each time you are able to influence John
+            to satisfy your obsession, you will earn points proportional to the
+            difficulty of the obsession (denoted by a star rating).
+          </Typography>
           <Box
             display="grid"
-            gridTemplateColumns="repeat(auto-fill, minmax(100px, 1fr))"
+            gridTemplateColumns="repeat(auto-fill, minmax(150px, 1fr))"
             gap={2}
             mt={1}
+            sx={{
+              overflowY: 'scroll',
+              maxHeight: '300px',
+            }}
           >
             {obsessions.map((obsession, index) => (
               <Button
                 key={index}
-                variant={selectedObsession === obsession ? 'outlined' : 'plain'}
                 onClick={() => handleObsessionClick(obsession)}
+                variant={selectedObsession === obsession ? 'solid' : 'soft'}
                 sx={{
                   cursor: 'pointer',
                   padding: '16px',
                   textAlign: 'center',
                   alignSelf: 'center',
-                  backgroundColor:
-                    selectedObsession === obsession
-                      ? 'primary.softFocus' // JoyUI primary color when selected
-                      : 'background.body', // JoyUI default background
-                  border:
-                    selectedObsession === obsession
-                      ? '2px solid #4caf50'
-                      : '2px solid rgba(0,0,0,0)', // Thicker success-green border
-                  '&:hover': {
-                    backgroundColor:
-                      selectedObsession === obsession
-                        ? 'primary.hover' // JoyUI hover color when selected
-                        : 'primary.softHover', // JoyUI hover color when not selected
-                  },
-                  '&:active': {
-                    backgroundColor:
-                      selectedObsession === obsession
-                        ? 'primary.active' // JoyUI active color when selected
-                        : 'primary.main', // JoyUI primary color when active
-                  },
+                  height: '120px',
                 }}
               >
-                <Typography>{obsession.description}</Typography>
+                {obsession.description}
                 {renderStars(obsession.rank)}{' '}
                 {/* Display stars based on rank */}
               </Button>
             ))}
           </Box>
-        </Box>
-
-        <Button
-          onClick={handleSubmit}
-          disabled={selectedSkills.length !== 2 || !selectedObsession}
-          sx={{
-            backgroundColor: 'primary.main', // Default JoyUI primary color
-            '&:hover': {
-              backgroundColor: 'primary.hover', // JoyUI hover color
-            },
-            '&:active': {
-              backgroundColor: 'primary.active', // JoyUI active color
-            },
-          }}
-        >
-          Submit Selection
-        </Button>
-      </Box>
-    </Card>
+          <Stack
+            flexDirection="row"
+            justifyContent="space-between"
+            sx={{ marginTop: 2 }}
+          >
+            <Button variant="soft" onClick={() => setStep(n => n - 1)}>
+              Back
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={selectedSkills.length !== 2 || !selectedObsession}
+              sx={{
+                backgroundColor: 'primary.main', // Default JoyUI primary color
+                '&:hover': {
+                  backgroundColor: 'primary.hover', // JoyUI hover color
+                },
+                '&:active': {
+                  backgroundColor: 'primary.active', // JoyUI active color
+                },
+              }}
+            >
+              Submit Selection
+            </Button>
+          </Stack>
+        </>
+      )}
+    </>
   );
 };
 
