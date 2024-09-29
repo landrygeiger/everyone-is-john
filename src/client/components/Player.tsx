@@ -3,16 +3,22 @@ import { client } from '../zoom';
 import { StateContext } from '../State';
 import { Stream, VideoPlayer, VideoQuality } from '@zoom/videosdk';
 import { Box, Card, Typography } from '@mui/joy';
+import ReactDice from 'react-dice-complete';
+import { isWeakMap } from 'util/types';
 
 type Props = {
   nickname: string;
 };
 
 const Player: FC<Props> = ({ nickname }) => {
-  const { nickname: appNickname } = useContext(StateContext);
+  const { nickname: appNickname, ...appState } = useContext(StateContext);
   const streamRef = useRef<typeof Stream | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [trigger, setTrigger] = useState(0);
+
+  const playerInTie =
+    appState.kind === 'biddingTie' &&
+    appState.players.find(u => u.nickname === nickname);
 
   useEffect(() => {
     client.on('peer-video-state-change', () => {
@@ -57,12 +63,30 @@ const Player: FC<Props> = ({ nickname }) => {
     <Box
       my={5}
       width="350px"
-      style={
-        {
-          // filter: 'drop-shadow(5px 5px 8px #DDDDDD)',
-        }
-      }
+      style={{
+        // filter: 'drop-shadow(5px 5px 8px #DDDDDD)',
+        position: 'relative',
+      }}
     >
+      {playerInTie &&
+        playerInTie.tieStatus.kind === 'tie' &&
+        playerInTie.tieStatus.roll && (
+          <Card
+            sx={{ position: 'absolute', top: '-100px', left: '135px', p: 1 }}
+          >
+            <ReactDice
+              numDice={1}
+              defaultRoll={playerInTie.tieStatus.roll}
+              rollDone={() => {}}
+              faceColor={'#b0d2ff'}
+              dotColor={'#ffffff'}
+              outlineColor={'#97abc4'}
+              dieSize={30}
+              outline
+              disableIndividual
+            />
+          </Card>
+        )}
       <Box
         style={{
           width: '300px',

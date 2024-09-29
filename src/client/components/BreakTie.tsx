@@ -53,8 +53,9 @@ const BreakTie: FC = () => {
   }, [appState]);
 
   return (
-    <Card sx={{ p: 5 }}>
-      <Typography level="h1">
+    <Card sx={{ p: 5, maxWidth: '350px' }}>
+      <Typography level="h1">There was a tie!</Typography>
+      <Typography>
         A bidding tie has occurred between{' '}
         {namesToListStr(
           appState.kind === 'biddingTie'
@@ -63,7 +64,7 @@ const BreakTie: FC = () => {
                 .map(p => p.nickname)
             : [],
         )}
-        !
+        . This must be settled!
       </Typography>
       {involvesMe ? (
         <Stack>
