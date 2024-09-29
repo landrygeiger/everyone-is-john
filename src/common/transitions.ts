@@ -306,14 +306,15 @@ export const maybeFinishTieRoll = (): UpdateAppState => async prev => {
 export const userIssuesControlInstruction =
   (instruction: string): UpdateAppState =>
   async prev => {
-    if (prev.kind !== 'control') return Promise.resolve(prev);
+    if (prev.kind !== 'control' && prev.kind !== 'skillCheck')
+      return Promise.resolve(prev);
 
     const response = await callClaudeConverse(
       [
         ...prev.history.slice(-10),
         `INSTRUCTION: ${instruction}\nPLAYER DETAILS:\nSkills: ${prev.controlPlayer.skills.one}, ${prev.controlPlayer.skills.two}\nObsession: ${prev.controlPlayer.obsession.description}`,
       ],
-      `You are generating a JSON object that determines the next state of a ttrpg game of “Everyone is John.” Using the provided player instructions, generate the Game Master’s response, in the following JSON format, specifying the Game Master’s description and the ensuing result. {“description”: string; “result”: | { “kind”: “skillCheckWithAdvantage“ } | { “kind”: “skillCheck“ } | { “kind”: “okayNext” } | { “kind”: “fallAsleep” } | { “kind”: “obsessionsCompleted”};}; For uncertain tasks that require some skill to accomplish, you should prompt the player for a skill check. If they have skills unrelated to the task, the result should be a skillCheck, otherwise the result will be skillCheckWithAdvantage if one of their skills applies. Do not grant advantage unless you can justify it in the description. If there is no skillCheck required, determine if the task results in any completed obsessions by returning an obsessionCompleted result with the player(s) who completed their obsession. If no obsessions are completed and no skillcheck is required, return an okayNext result. Your output must be in valid JSON format with no other text: {“description”: “string”; “result”: | { “kind”: “skillCheckWithAdvantage” } | { “kind”: “skillCheck” } | { “kind”: “okayNext” } | { “kind”: “fallAsleep” } | { “kind”: “obsessionsCompleted” };};.`,
+      `You are an API that determines the next state of a ttrpg game of "Everyone is John." You will receive some context about the last things that happened in the game. You will receive information about the player's skills and obsession. You will also receive a new instruction from a player. Based on this context, you will generate a response that conforms to the following rules: your response will consist only of a JSON string that matches this schema: {“description”: “string”, “result”: { “kind”: “skillCheckWithAdvantage“ } | { “kind”: “skillCheck“ } | { “kind”: “okayNext” } | { “kind”: “fallAsleep” } | { “kind”: “obsessionsCompleted”}}. For uncertain tasks that require any amount of skill to accomplish, you should prompt the player for a skill check. If they have skills unrelated to the task, the result should be a skillCheck, otherwise the result will be skillCheckWithAdvantage if one of their skills applies. Do not grant advantage unless you can justify it in the description. If there is no skill check required, determine if the task results in completing the player's obsession by returning an obsessionsCompleted result. If no obsessions are completed and no skillcheck is required, return an okayNext result. Your output must be in valid JSON format with no other text: {“description”: “string”, “result”: { “kind”: “skillCheckWithAdvantage” } | { “kind”: “skillCheck” } | { “kind”: “okayNext” } | { “kind”: “fallAsleep” } | { “kind”: “obsessionsCompleted” }}.`,
     );
 
     // based on user data and existing history
@@ -405,6 +406,10 @@ export const attemptSkillCheck =
 
     const computedRoll = rollResult + willpowerAdded;
     const isSuccess = prev.advantage ? computedRoll >= 3 : computedRoll >= 6;
+
+    console.log(
+      `attempting skill check, roll of ${computedRoll}, success: ${isSuccess}`,
+    );
 
     if (isSuccess) {
       const test = userIssuesControlInstruction(

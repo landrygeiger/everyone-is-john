@@ -10,6 +10,7 @@ import Picking from './Picking';
 import BreakTie from './BreakTie';
 import Bidding from './Bidding';
 import { Control } from './Control';
+import { SkillCheck } from './SkillCheck';
 
 const Router: FC = () => {
   const appState = useContext(StateContext);
@@ -48,6 +49,9 @@ const Router: FC = () => {
           .with({ kind: 'biddingTie' }, () => <BreakTie />)
           .with({ kind: 'control' }, controlState => (
             <Control controlState={controlState} />
+          ))
+          .with({ kind: 'skillCheck' }, skillCheckState => (
+            <SkillCheck skillCheckState={skillCheckState} />
           ))
           .otherwise(appState => (
             <Typography level="body-md">{appState.kind}</Typography>

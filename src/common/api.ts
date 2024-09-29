@@ -56,4 +56,7 @@ export const selectKit = (body: KitSelectRequest) =>
 export const issueInstruction = (body: IssueInstructionRequest) =>
   post(makeUrl('/api/issueInstruction'), body);
 
+export const attemptSkillCheck = (body: AttemptSkillCheckRequest) =>
+  post(makeUrl('/api/attemptSkillCheck'), body);
+
 export const fetchZoomJwt = () => get(makeUrl('/api/zoom-jwt'));
