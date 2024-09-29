@@ -97,6 +97,11 @@ export const SkillCheck: React.FC<Props> = ({ skillCheckState }) => {
       </Card>
     </>
   ) : (
-    <Card>{`${skillCheckState.controlPlayer.nickname} is doing a skill check`}</Card>
+    <Card sx={{ p: 5 }}>
+      <Typography level="h1">Skill Check</Typography>
+      <Typography>
+        {`${skillCheckState.controlPlayer.nickname} is performing a skill check`}
+      </Typography>
+    </Card>
   );
 };
