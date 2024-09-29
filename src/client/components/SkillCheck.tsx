@@ -32,7 +32,6 @@ export const SkillCheck: React.FC<Props> = ({ skillCheckState }) => {
   return imInCharge ? (
     <>
       <Card>
-        <Typography>ur in charge</Typography>
         <Slider
           value={willpowerToAdd}
           onChange={(_, newValue) => setWillpowerToAdd(newValue as number)}
@@ -44,14 +43,12 @@ export const SkillCheck: React.FC<Props> = ({ skillCheckState }) => {
           sx={{
             '--Slider-markSize': '4px',
             '--Slider-thumbSize': '22px',
-            my: 4,
             maxWidth: '300px',
           }}
           disabled={clickedSubmit}
         />
         <Box
           sx={{
-            my: 5,
             display: 'flex',
             justifyContent: 'center',
           }}
@@ -71,6 +68,7 @@ export const SkillCheck: React.FC<Props> = ({ skillCheckState }) => {
         <Button onClick={roll} disabled={clickedSubmit}>
           roll skill check
         </Button>
+        <Typography>{`advantage: ${skillCheckState.advantage}`}</Typography>
       </Card>
     </>
   ) : (
