@@ -147,24 +147,28 @@ export const maybeFinishBidding = (): UpdateAppState => async prev => {
 
   const scenario =
     prev.history.length === 0
-      ? callClaudeConverse(
+      ? await callClaudeConverse(
           [
             `John has gotten himself into a peculiar situation. Come up with the situation and set the scene for the players, describing what John sees and make sure to leave lots of opportunities for player agency. Do not describe John's actions.`,
           ],
           `You are a Game Master for the TTRPG “Everyone is John.” In 4 sentences, your job is to describe the current situation of the protagonist, John. Describe in detail, the setting in which John wakes up. Be creative and imaginative. The story should take place in the modern day and should not have any somber or scary elements. It should feel like a light action comedy. Your output should consist only of text a narrator would say. Speak in the present tense.`,
           500,
         )
-      : callClaudeConverse(
+      : await callClaudeConverse(
           historyWithWinner.slice(-10),
           `You are a Game Master for the TTRPG “Everyone is John.” In ten words or less, describe the current situation of the protagonist, John. Continue where the provided history left off. Do not repeat any of it. Your output should consist only of text a narrator would say. Speak in the present tense. End with “What do you do?”`,
           300,
         );
 
-  const newHistory = [...historyWithWinner, await scenario];
+  const newHistory = [...historyWithWinner, scenario];
 
-  const generatedImageURL = await callStableImage(
-    newHistory.slice(-3).join('\n\n'),
+  const summary = await callClaudeConverse(
+    [scenario],
+    `You are a prompt writer for an Image diffusion Model for a game of Everyone is John. Create a prompt that showcases the last thing John did, given the action provided. John is a middle aged clean shaven white man with brown hair and brown eyes. The image should be in an animated disney pixar style. Keep your prompt concise and fewer than 3 sentences. The image model only has the context you provide.`,
   );
+
+  const generatedImageURL = await callStableImage(summary);
+
   return Promise.resolve({
     kind: 'control',
     imageURL: generatedImageURL,
@@ -253,24 +257,27 @@ export const maybeFinishTieRoll = (): UpdateAppState => async prev => {
 
   const scenario =
     prev.history.length === 0
-      ? callClaudeConverse(
+      ? await callClaudeConverse(
           [
             `John has gotten himself into a peculiar situation. Come up with the situation and set the scene for the players, describing what John sees and make sure to leave lots of opportunities for player agency. Do not describe John's actions.`,
           ],
           `You are a Game Master for the TTRPG “Everyone is John.” In 4 sentences, your job is to describe the current situation of the protagonist, John. Describe in detail, the setting in which John wakes up. Be creative and imaginative. The story should take place in the modern day and should not have any somber or scary elements. It should feel like a light action comedy. Your output should consist only of text a narrator would say. Speak in the present tense.`,
           500,
         )
-      : callClaudeConverse(
+      : await callClaudeConverse(
           historyWithWinner.slice(-10),
           `You are a Game Master for the TTRPG “Everyone is John.” In ten words or less, describe the current situation of the protagonist, John. Continue where the provided history left off. Do not repeat any of it. Your output should consist only of text a narrator would say. Speak in the present tense. End with “What do you do?”`,
           300,
         );
 
-  const newHistory = [...historyWithWinner, await scenario];
+  const newHistory = [...historyWithWinner, scenario];
 
-  const generatedImageURL = await callStableImage(
-    newHistory.slice(-3).join('\n\n'),
+  const summary = await callClaudeConverse(
+    [scenario],
+    `You are a prompt writer for an Image diffusion Model for a game of Everyone is John. Create a prompt that showcases the last thing John did, given the action provided. John is a middle aged clean shaven white man with brown hair and brown eyes. The image should be in an animated disney pixar style. Keep your prompt concise and fewer than 3 sentences. The image model only has the context you provide.`,
   );
+
+  const generatedImageURL = await callStableImage(summary);
 
   return Promise.resolve({
     kind: 'control',
@@ -304,14 +311,18 @@ export const userIssuesControlInstruction =
         ...prev.history.slice(-10),
         `INSTRUCTION: ${instruction}\nPLAYER DETAILS:\nSkills: ${prev.controlPlayer.skills.one}, ${prev.controlPlayer.skills.two}\nObsession: ${prev.controlPlayer.obsession.description}`,
       ],
-      `You are the GM of the game Everyone Is John. Given the current history and the most recent instruction create a logical continuation. Your response must be in the form of the typescript type InstructionResult = {description: string; result: | { kind: 'skillCheckWithAdvantage' } | { kind: 'skillCheck' } | { kind: 'okayNext' } | { kind: 'fallAsleep' } | { kind: 'obsessionsCompleted'; playerNicknames: string[] };};`,
+      `You are generating a JSON object that determines the next state of a ttrpg game of “Everyone is John.” Using the provided player instructions, generate the Game Master’s response, in the following JSON format, specifying the Game Master’s description and the ensuing result. {“description”: string; “result”: | { “kind”: “skillCheckWithAdvantage“ } | { “kind”: “skillCheck“ } | { “kind”: “okayNext” } | { “kind”: “fallAsleep” } | { “kind”: “obsessionsCompleted”};}; For uncertain tasks that require some skill to accomplish, you should prompt the player for a skill check. If they have skills unrelated to the task, the result should be a skillCheck, otherwise the result will be skillCheckWithAdvantage if one of their skills applies. Do not grant advantage unless you can justify it in the description. If there is no skillCheck required, determine if the task results in any completed obsessions by returning an obsessionCompleted result with the player(s) who completed their obsession. If no obsessions are completed and no skillcheck is required, return an okayNext result. Your output must be in valid JSON format with no other text: {“description”: “string”; “result”: | { “kind”: “skillCheckWithAdvantage” } | { “kind”: “skillCheck” } | { “kind”: “okayNext” } | { “kind”: “fallAsleep” } | { “kind”: “obsessionsCompleted” };};.`,
     );
 
     // based on user data and existing history
     const result = JSON.parse(response) as InstructionResult;
-    const generatedImageURL = await callStableImage(
-      `${prev.history.join('\n\n')}\n\n${result.description}`,
+
+    const summary = await callClaudeConverse(
+      [result.description],
+      `You are a prompt writer for an Image diffusion Model for a game of Everyone is John. Create a prompt that showcases the last thing John did, given the action provided. John is a middle aged clean shaven white man with brown hair and brown eyes. The image should be in an animated disney pixar style. Keep your prompt concise and fewer than 3 sentences. The image model only has the context you provide.`,
     );
+
+    const generatedImageURL = await callStableImage(summary);
 
     if (result.result.kind === 'okayNext') {
       return Promise.resolve({

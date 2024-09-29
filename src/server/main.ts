@@ -27,8 +27,6 @@ import {
   PlayerTieRollRequest,
 } from '../common/api';
 import { getJWT } from './zoom';
-import { callStableImage } from './awsImageCall';
-import { callClaudeConverse } from './awsClaudeConverse';
 
 const app = express();
 const port = SERVER_PORT;
@@ -127,13 +125,3 @@ io.on('connection', socket => {
 server.listen(port, () => {
   console.log(`App is listening on port ${port}...`);
 });
-
-callClaudeConverse(
-  [
-    `John opens his eyes and finds himself in the backseat of a moving car. He blinks, disoriented, as he takes in his unfamiliar surroundings. The car is speeding down a busy city street, horns blaring and tires screeching as it weaves through traffic. John sits up, his eyes wide with confusion, and peers out the window, trying to get his bearings. In the front seat, he can see two figures arguing heatedly, their voices raised. John doesn't recognize them, but they seem to be in the midst of some sort of high-stakes situation. As the car careens around a sharp turn, John clutches the door handle, his heart racing. Where is he, and how did he end up here? The possibilities are endless, and John can't help but feel a tingle of excitement at the prospect of unraveling this mystery.`,
-    `CONTEST: Landry won the contest, and took control of John.`,
-    `John grips the door handle as the car careens through the city streets. Confusion and excitement swirl within him. Who are these people, and what is their high-stakes situation? John's head spins with the possibilities. What do you do?`,
-    `INSTRUCTION: I want to stop the car\nPLAYER DETAILS:\nSkills: diving, yelling\nObsession: eating icecream`,
-  ],
-  `You are generating a TypeScript type that determines the next state of a ttrpg game of “Everyone is John.” Using the provided player instructions, generate the Game Master’s response, in the following format, specifying the Game Master’s description and the ensuing result. {description: string; result: | { kind: 'skillCheckWithAdvantage' } | { kind: 'skillCheck' } | { kind: 'okayNext' } | { kind: 'fallAsleep' } | { kind: 'obsessionsCompleted'; playerNicknames: string[] };}; For uncertain tasks that require some skill to accomplish, you should prompt the player for a skill check. If they have skills unrelated to the task, the result should be a skillCheck, otherwise the result will be skillCheckWithAdvantage if one of their skills applies. If there is no skillCheck required, determine if the task results in any completed obsessions by returning an obsessionCompleted result with the player(s) who completed their obsession. If no obsessions are completed and no skillcheck is required, return an okayNext result. Your output must be this exact format with no other text: {description: string; result: | { kind: 'skillCheckWithAdvantage' } | { kind: 'skillCheck' } | { kind: 'okayNext' } | { kind: 'fallAsleep' } | { kind: 'obsessionsCompleted'; playerNicknames: string[] };};`,
-).then(console.log);
