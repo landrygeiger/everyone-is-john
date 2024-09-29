@@ -29,9 +29,28 @@ export const SkillCheck: React.FC<Props> = ({ skillCheckState }) => {
     attemptSkillCheck({ rollResult: total, willpowerAdded: willpowerToAdd });
   };
 
+  const rollNeeded = Math.max(
+    (skillCheckState.advantage ? 4 : 6) - willpowerToAdd,
+    1,
+  );
+
   return imInCharge ? (
     <>
-      <Card>
+      <Card sx={{ width: '450px' }}>
+        <Typography level="h1">Skill Check</Typography>
+        <Typography>
+          You must pass a skill check to succeed in your influence. Spending
+          Willpower increases your chance of success.
+        </Typography>
+        {skillCheckState.advantage && (
+          <Typography>
+            {skillCheckState.advantage
+              ? 'You have advantage because of your skills. '
+              : ''}
+            To succeed, you must roll{' '}
+            {rollNeeded === 6 ? 'a 6.' : 'at least a ' + rollNeeded}
+          </Typography>
+        )}
         <Slider
           value={willpowerToAdd}
           onChange={(_, newValue) => setWillpowerToAdd(newValue as number)}
@@ -44,6 +63,7 @@ export const SkillCheck: React.FC<Props> = ({ skillCheckState }) => {
             '--Slider-markSize': '4px',
             '--Slider-thumbSize': '22px',
             maxWidth: '300px',
+            mx: 'auto',
           }}
           disabled={clickedSubmit}
         />
@@ -66,9 +86,8 @@ export const SkillCheck: React.FC<Props> = ({ skillCheckState }) => {
           />
         </Box>
         <Button onClick={roll} disabled={clickedSubmit}>
-          roll skill check
+          {`Roll with ${willpowerToAdd} Willpower`}
         </Button>
-        <Typography>{`advantage: ${skillCheckState.advantage}`}</Typography>
       </Card>
     </>
   ) : (

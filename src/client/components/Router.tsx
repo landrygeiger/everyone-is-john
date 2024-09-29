@@ -23,36 +23,45 @@ const Router: FC = () => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          flexDirection: 'column',
+          flexDirection: 'row',
+          gap: 10,
         }}
       >
-        {appState.kind === 'bidding' ||
-        appState.kind === 'biddingTie' ||
-        appState.kind === 'control' ||
-        appState.kind === 'skillCheck' ? (
-          <>
-            {appState.history.length > 0 && (
-              <Card>
-                <Typography>
-                  {appState.history[appState.history.length - 1]}
-                </Typography>
-              </Card>
-            )}
+        {(appState.kind === 'bidding' ||
+          appState.kind === 'biddingTie' ||
+          appState.kind === 'control' ||
+          appState.kind === 'skillCheck') && (
+          <Stack flexDirection="column" alignItems="center">
             {appState.imageURL && (
               <Card
                 sx={{
-                  width: '300px',
+                  width: '350px',
                   marginTop: 1,
                   backgroundColor: 'transparent',
                   borderColor: 'transparent',
                 }}
               >
-                <img style={{ paddingTop: 1 }} src={appState.imageURL} />
+                <img
+                  style={{ paddingTop: 1, borderRadius: '10px' }}
+                  src={appState.imageURL}
+                />
               </Card>
             )}
-          </>
-        ) : (
-          <></>
+            {appState.history.length > 0 && (
+              <Card
+                sx={{
+                  width: '600px',
+                  height: '100%',
+                  marginTop: '-130px',
+                  p: 4,
+                }}
+              >
+                <Typography>
+                  {appState.history[appState.history.length - 1]}
+                </Typography>
+              </Card>
+            )}
+          </Stack>
         )}
         {match(appState)
           .with(
@@ -93,7 +102,7 @@ const Router: FC = () => {
           alignItems="flex-end"
         >
           {getPlayers(appState).map(player => (
-            <Player nickname={player.nickname} />
+            <Player key={player.nickname} nickname={player.nickname} />
           ))}
         </Stack>
       )}
