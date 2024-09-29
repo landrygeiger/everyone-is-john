@@ -94,7 +94,7 @@ export const playerBid =
       players: updateElementInArray(
         prev.players,
         p => ({ ...p, bidAmount: bidAmt }),
-        p => p.nickname === 'nickname',
+        p => p.nickname === nickname,
       ),
     });
   };
@@ -215,6 +215,7 @@ export const maybeFinishTieRoll = (): UpdateAppState => async prev => {
   const everyoneDone = prev.players.every(
     p => p.tieStatus.kind === 'noTie' || p.tieStatus.roll !== null,
   );
+  console.log(`checking if tie roll done. everyone done: ${everyoneDone}`);
 
   if (!everyoneDone) return Promise.resolve(prev);
 
@@ -255,6 +256,7 @@ export const maybeFinishTieRoll = (): UpdateAppState => async prev => {
     `CONTEST: ${winners[0].nickname} won the contest, and took control of John.`,
   ];
 
+  console.log('about to ask claude for a scenario...');
   const scenario =
     prev.history.length === 0
       ? await callClaudeConverse(
@@ -276,8 +278,8 @@ export const maybeFinishTieRoll = (): UpdateAppState => async prev => {
     [scenario],
     `You are a prompt writer for an Image diffusion Model for a game of Everyone is John. Create a prompt that showcases the last thing John did, given the action provided. John is a middle aged clean shaven white man with brown hair and brown eyes. The image should be in an animated disney pixar style. Keep your prompt concise and fewer than 3 sentences. The image model only has the context you provide.`,
   );
-
   const generatedImageURL = await callStableImage(summary);
+  console.log('received scenario and image.');
 
   return Promise.resolve({
     kind: 'control',

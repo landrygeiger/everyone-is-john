@@ -44,7 +44,16 @@ export const joinLobby = (body: JoinLobbyRequest) =>
 
 export const startGame = () => post(makeUrl('/api/start'), {});
 
+export const submitBid = (body: PlayerBidRequest) =>
+  post(makeUrl('/api/playerBid'), body);
+
 export const submitTieRoll = (body: PlayerTieRollRequest) =>
   post(makeUrl('/api/playerTieRoll'), body);
+
+export const selectKit = (body: KitSelectRequest) =>
+  post(makeUrl('/api/selectKit'), body);
+
+export const issueInstruction = (body: IssueInstructionRequest) =>
+  post(makeUrl('/api/issueInstruction'), body);
 
 export const fetchZoomJwt = () => get(makeUrl('/api/zoom-jwt'));

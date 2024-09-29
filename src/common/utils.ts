@@ -54,3 +54,13 @@ export const getPlayers = (state: App) =>
     : 'controlPlayer' in state && 'otherPlayers' in state
       ? [state.controlPlayer, ...state.otherPlayers]
       : [];
+
+export const namesToListStr = (names: string[]) => {
+  if (names.length === 0) return '';
+  if (names.length === 1) return names[0];
+  let list = `${names[names.length - 2]}${names.length === 2 ? '' : ','} and ${names[names.length - 1]}`;
+  for (let i = names.length - 3; i >= 0; i--) {
+    list = `${names[i]}, ${list}`;
+  }
+  return list;
+};
