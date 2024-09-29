@@ -10,6 +10,7 @@ import {
 import ReactDice, { ReactDiceRef } from 'react-dice-complete';
 import { submitTieRoll } from '../../common/api';
 import { StateContext } from '../State';
+import { namesToListStr } from '../../common/utils';
 
 const BreakTie: FC = () => {
   const appState = useContext(StateContext);
@@ -53,7 +54,17 @@ const BreakTie: FC = () => {
 
   return (
     <Card sx={{ p: 5 }}>
-      <Typography level="h1">A bidding tie has occurred!</Typography>
+      <Typography level="h1">
+        A bidding tie has occurred between{' '}
+        {namesToListStr(
+          appState.kind === 'biddingTie'
+            ? appState.players
+                .filter(p => p.tieStatus.kind === 'tie')
+                .map(p => p.nickname)
+            : [],
+        )}
+        !
+      </Typography>
       {involvesMe ? (
         <Stack>
           <Box
@@ -80,7 +91,7 @@ const BreakTie: FC = () => {
           </Button>
         </Stack>
       ) : (
-        <Typography>But not involving you...</Typography>
+        <Typography>Sit tight while they hash it out...</Typography>
       )}
     </Card>
   );
