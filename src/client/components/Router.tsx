@@ -2,7 +2,7 @@ import { FC, useContext } from 'react';
 import { StateContext } from '../State';
 import { match, P } from 'ts-pattern';
 import Lobby from './Lobby';
-import { Box, Stack, Typography } from '@mui/joy';
+import { Box, Card, Stack, Typography } from '@mui/joy';
 import JoinLobby from './JoinLobby';
 import { getPlayers } from '../../common/utils';
 import Player from './Player';
@@ -23,8 +23,37 @@ const Router: FC = () => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          flexDirection: 'column',
         }}
       >
+        {appState.kind === 'bidding' ||
+        appState.kind === 'biddingTie' ||
+        appState.kind === 'control' ||
+        appState.kind === 'skillCheck' ? (
+          <>
+            {appState.history.length > 0 && (
+              <Card>
+                <Typography>
+                  {appState.history[appState.history.length - 1]}
+                </Typography>
+              </Card>
+            )}
+            {appState.imageURL && (
+              <Card
+                sx={{
+                  width: '300px',
+                  marginTop: 1,
+                  backgroundColor: 'transparent',
+                  borderColor: 'transparent',
+                }}
+              >
+                <img style={{ paddingTop: 1 }} src={appState.imageURL} />
+              </Card>
+            )}
+          </>
+        ) : (
+          <></>
+        )}
         {match(appState)
           .with(
             {
