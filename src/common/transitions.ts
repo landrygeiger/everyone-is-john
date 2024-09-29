@@ -208,6 +208,7 @@ export const maybeFinishTieRoll = (): UpdateAppState => async prev => {
   const everyoneDone = prev.players.every(
     p => p.tieStatus.kind === 'noTie' || p.tieStatus.roll !== null,
   );
+  console.log(`checking if tie roll done. everyone done: ${everyoneDone}`);
 
   if (!everyoneDone) return Promise.resolve(prev);
 
@@ -248,6 +249,7 @@ export const maybeFinishTieRoll = (): UpdateAppState => async prev => {
     `CONTEST: ${winners[0].nickname} won the contest, and took control of John.`,
   ];
 
+  console.log('about to ask claude for a scenario...');
   // TODO: Prompt Engineering
   const scenario =
     prev.history.length === 0
@@ -265,6 +267,8 @@ export const maybeFinishTieRoll = (): UpdateAppState => async prev => {
   const generatedImageURL = await callStableImage(
     newHistory.slice(-3).join('\n\n'),
   );
+
+  console.log('received scenario and image.');
 
   return Promise.resolve({
     kind: 'control',
