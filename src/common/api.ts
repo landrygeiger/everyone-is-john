@@ -47,4 +47,7 @@ export const startGame = () => post(makeUrl('/api/start'), {});
 export const submitTieRoll = (body: PlayerTieRollRequest) =>
   post(makeUrl('/api/playerTieRoll'), body);
 
+export const selectKit = (body: KitSelectRequest) =>
+  post(makeUrl('/api/selectKit'), body);
+
 export const fetchZoomJwt = () => get(makeUrl('/api/zoom-jwt'));
