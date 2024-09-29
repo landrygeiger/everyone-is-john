@@ -145,16 +145,19 @@ export const maybeFinishBidding = (): UpdateAppState => async prev => {
     `CONTEST: ${highestBids[0].nickname} won the contest, and took control of John.`,
   ];
 
-  // TODO: Prompt Engineering
   const scenario =
     prev.history.length === 0
       ? callClaudeConverse(
-          ['No current history, generate a scenario.'],
-          'You are the GM of everyone is John.',
+          [
+            `John has gotten himself into a peculiar situation. Come up with the situation and set the scene for the players, describing what John sees and make sure to leave lots of opportunities for player agency. Do not describe John's actions.`,
+          ],
+          `You are a Game Master for the TTRPG “Everyone is John.” In 4 sentences, your job is to describe the current situation of the protagonist, John. Describe in detail, the setting in which John wakes up. Be creative and imaginative. The story should take place in the modern day and should not have any somber or scary elements. It should feel like a light action comedy. Your output should consist only of text a narrator would say. Speak in the present tense.`,
+          500,
         )
       : callClaudeConverse(
           historyWithWinner.slice(-10),
-          'You are the GM of everyone is John. You will be given the history of the last ten events in the queue. Describe the events since the last person lost control.',
+          `You are a Game Master for the TTRPG “Everyone is John.” In ten words or less, describe the current situation of the protagonist, John. Continue where the provided history left off. Do not repeat any of it. Your output should consist only of text a narrator would say. Speak in the present tense. End with “What do you do?”`,
+          300,
         );
 
   const newHistory = [...historyWithWinner, await scenario];
@@ -248,16 +251,19 @@ export const maybeFinishTieRoll = (): UpdateAppState => async prev => {
     `CONTEST: ${winners[0].nickname} won the contest, and took control of John.`,
   ];
 
-  // TODO: Prompt Engineering
   const scenario =
     prev.history.length === 0
       ? callClaudeConverse(
-          ['No current history, generate a scenario.'],
-          'You are the GM of everyone is John.',
+          [
+            `John has gotten himself into a peculiar situation. Come up with the situation and set the scene for the players, describing what John sees and make sure to leave lots of opportunities for player agency. Do not describe John's actions.`,
+          ],
+          `You are a Game Master for the TTRPG “Everyone is John.” In 4 sentences, your job is to describe the current situation of the protagonist, John. Describe in detail, the setting in which John wakes up. Be creative and imaginative. The story should take place in the modern day and should not have any somber or scary elements. It should feel like a light action comedy. Your output should consist only of text a narrator would say. Speak in the present tense.`,
+          500,
         )
       : callClaudeConverse(
           historyWithWinner.slice(-10),
-          'You are the GM of everyone is John. You will be given the history of the last ten events in the queue. Describe the events since the last person lost control.',
+          `You are a Game Master for the TTRPG “Everyone is John.” In ten words or less, describe the current situation of the protagonist, John. Continue where the provided history left off. Do not repeat any of it. Your output should consist only of text a narrator would say. Speak in the present tense. End with “What do you do?”`,
+          300,
         );
 
   const newHistory = [...historyWithWinner, await scenario];
@@ -294,7 +300,10 @@ export const userIssuesControlInstruction =
     if (prev.kind !== 'control') return Promise.resolve(prev);
 
     const response = await callClaudeConverse(
-      [...prev.history.slice(-10), `INSTRUCTION: ${instruction}`],
+      [
+        ...prev.history.slice(-10),
+        `INSTRUCTION: ${instruction}\nPLAYER DETAILS:\nSkills: ${prev.controlPlayer.skills.one}, ${prev.controlPlayer.skills.two}\nObsession: ${prev.controlPlayer.obsession.description}`,
+      ],
       `You are the GM of the game Everyone Is John. Given the current history and the most recent instruction create a logical continuation. Your response must be in the form of the typescript type InstructionResult = {description: string; result: | { kind: 'skillCheckWithAdvantage' } | { kind: 'skillCheck' } | { kind: 'okayNext' } | { kind: 'fallAsleep' } | { kind: 'obsessionsCompleted'; playerNicknames: string[] };};`,
     );
 

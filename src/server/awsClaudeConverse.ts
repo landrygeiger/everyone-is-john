@@ -11,6 +11,7 @@ const historyToString = (history: string[]) => {
 export const callClaudeConverse = async (
   history: string[],
   systemPrompt: string,
+  maxTokens: number = 2000,
 ) => {
   const client = new BedrockRuntimeClient({
     region: process.env.AWS_DEFAULT_REGION as string,
@@ -34,6 +35,9 @@ export const callClaudeConverse = async (
       modelId: modelId,
       messages: conversation,
       system: [{ text: systemPrompt }],
+      inferenceConfig: {
+        maxTokens: maxTokens,
+      },
     }),
   );
 
