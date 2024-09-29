@@ -4,6 +4,7 @@ import { StateContext } from '../State';
 import { Box, Button, Card, Slider, Typography } from '@mui/joy';
 import { attemptSkillCheck } from '../../common/api';
 import ReactDice, { ReactDiceRef } from 'react-dice-complete';
+import ElectricBolt from '@mui/icons-material/ElectricBolt';
 
 type Props = {
   skillCheckState: Extract<App, { kind: 'skillCheck' }>;
@@ -36,7 +37,7 @@ export const SkillCheck: React.FC<Props> = ({ skillCheckState }) => {
 
   return imInCharge ? (
     <>
-      <Card sx={{ width: '450px' }}>
+      <Card sx={{ width: '450px', p: 5 }}>
         <Typography level="h1">Skill Check</Typography>
         <Typography>
           You must pass a skill check to succeed in your influence. Spending
@@ -85,8 +86,13 @@ export const SkillCheck: React.FC<Props> = ({ skillCheckState }) => {
             disableIndividual
           />
         </Box>
-        <Button onClick={roll} disabled={clickedSubmit}>
-          {`Roll with ${willpowerToAdd} Willpower`}
+        <Button
+          onClick={roll}
+          disabled={clickedSubmit}
+          sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+        >
+          <span>{`Roll with ${willpowerToAdd} Willpower`}</span>
+          <ElectricBolt fontSize="small" />
         </Button>
       </Card>
     </>

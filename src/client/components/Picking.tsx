@@ -17,7 +17,7 @@ const Picking: FC<Props> = ({ pickingState }) => {
   const doneSelecting = me.skills !== null && me.obsession !== null;
 
   return (
-    <Card sx={{ width: 650 }}>
+    <Card sx={{ width: 650, p: 3 }}>
       {doneSelecting ? (
         <>
           <AnimatedText
