@@ -1,7 +1,7 @@
-import { SERVER_ORIGIN } from './config';
 import { Obsession } from './types';
 
-const makeUrl = (route: string) => `${SERVER_ORIGIN}${route}`;
+const makeUrl = (route: string) =>
+  `${import.meta.env.VITE_SERVER_ORIGIN}${route}`;
 
 const post = (url: string, body: unknown) =>
   fetch(url, {

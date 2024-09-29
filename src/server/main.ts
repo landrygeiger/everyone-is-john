@@ -2,7 +2,6 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
-import { CLIENT_ORIGIN, SERVER_PORT } from '../common/config';
 import { App } from '../common/types';
 import { Mutex } from 'async-mutex';
 import {
@@ -29,12 +28,12 @@ import {
 import { getJWT } from './zoom';
 
 const app = express();
-const port = SERVER_PORT;
+const port = process.env.SERVER_PORT;
 
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: CLIENT_ORIGIN,
+    origin: process.env.CLIENT_ORIGIN,
   },
 });
 
@@ -49,7 +48,7 @@ const setState = async (getNewState: UpdateAppState) => {
 
 app.use(
   cors({
-    origin: CLIENT_ORIGIN,
+    origin: process.env.CLIENT_ORIGIN,
   }),
 );
 

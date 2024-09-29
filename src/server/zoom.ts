@@ -1,7 +1,7 @@
 import { KJUR } from 'jsrsasign';
-import { ZOOM_SESSION_NAME } from '../common/config';
 
-export const getJWT = async () => await generateSignature(ZOOM_SESSION_NAME, 1);
+export const getJWT = async () =>
+  await generateSignature(process.env.VITE_ZOOM_SESSION_NAME as string, 1);
 
 const generateSignature = (sessionName: string, role: number) => {
   if (!process.env.ZOOM_SDK_KEY || !process.env.ZOOM_SDK_SECRET) {
