@@ -93,7 +93,7 @@ export type InstructionResult = {
     | { kind: 'skillCheck' }
     | { kind: 'okayNext' }
     | { kind: 'fallAsleep' }
-    | { kind: 'obsessionsCompleted'; playerNicknames: string[] };
+    | { kind: 'obsessionsCompleted' };
 };
 
 export type Obsession = { description: string; rank: number };
