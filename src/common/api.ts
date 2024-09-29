@@ -50,4 +50,7 @@ export const submitBid = (body: PlayerBidRequest) =>
 export const submitTieRoll = (body: PlayerTieRollRequest) =>
   post(makeUrl('/api/playerTieRoll'), body);
 
+export const selectKit = (body: KitSelectRequest) =>
+  post(makeUrl('/api/selectKit'), body);
+
 export const fetchZoomJwt = () => get(makeUrl('/api/zoom-jwt'));
