@@ -1,5 +1,12 @@
 import { Box, Button, Card, Stack, Typography } from '@mui/joy';
-import { FC, useContext, useEffect, useRef, useState } from 'react';
+import {
+  FC,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import ReactDice, { ReactDiceRef } from 'react-dice-complete';
 import { submitTieRoll } from '../../common/api';
 import { StateContext } from '../State';
@@ -7,7 +14,7 @@ import { StateContext } from '../State';
 const BreakTie: FC = () => {
   const appState = useContext(StateContext);
   const reactDice = useRef<ReactDiceRef>(null);
-  const [disabled, setDisabled] = useState(false);
+  const [clickedSubmit, setClickedSubmit] = useState(false);
   const involvesMe =
     appState.kind === 'biddingTie' &&
     appState.players.find(
@@ -16,11 +23,13 @@ const BreakTie: FC = () => {
 
   const roll = () => {
     reactDice.current?.rollAll();
-    setDisabled(true);
+    setClickedSubmit(true);
   };
 
   const rollDone = async (total: number) => {
+    console.log('roll done!');
     if (!appState.nickname) return;
+    if (!clickedSubmit) return;
     await submitTieRoll({
       nickname: appState.nickname,
       roll: total,
@@ -38,7 +47,7 @@ const BreakTie: FC = () => {
         p => p.tieStatus.kind === 'tie' && p.tieStatus.roll !== null,
       ).length === 0
     ) {
-      setDisabled(false);
+      setClickedSubmit(false);
     }
   }, [appState]);
 
@@ -66,7 +75,7 @@ const BreakTie: FC = () => {
               disableIndividual
             />
           </Box>
-          <Button onClick={roll} disabled={disabled}>
+          <Button onClick={roll} disabled={clickedSubmit}>
             Roll
           </Button>
         </Stack>

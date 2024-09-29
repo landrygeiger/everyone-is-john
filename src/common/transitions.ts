@@ -94,7 +94,7 @@ export const playerBid =
       players: updateElementInArray(
         prev.players,
         p => ({ ...p, bidAmount: bidAmt }),
-        p => p.nickname === 'nickname',
+        p => p.nickname === nickname,
       ),
     });
   };

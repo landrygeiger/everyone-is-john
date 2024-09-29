@@ -8,7 +8,8 @@ const Bidding: React.FC = () => {
   const [betAmount, setBetAmount] = useState<number>(0);
   const maxBet =
     (appState.kind === 'bidding' &&
-      appState.players.find(u => u.nickname === appState.nickname)?.points) ||
+      appState.players.find(u => u.nickname === appState.nickname)
+        ?.willpower) ||
     0;
   const [disabled, setDisabled] = useState(false);
 
@@ -28,10 +29,10 @@ const Bidding: React.FC = () => {
   return (
     <Card sx={{ padding: 5, maxWidth: 575 }}>
       <Typography level="h1" p={0}>
-        Place Your Bet
+        Place Your Bid
       </Typography>
       <Typography>
-        Select an amount of Willpower to wager. If your bet is the highest, you
+        Select an amount of Willpower to wager. If your bid is the highest, you
         win control of John. Otherwise, you'll get your Willpower back.
       </Typography>
       <Stack alignItems="center">
@@ -58,7 +59,7 @@ const Bidding: React.FC = () => {
           onClick={handleConfirm}
           sx={{ alignSelf: 'flex-end' }}
         >
-          Bet {betAmount} Willpower{' '}
+          Bid {betAmount} Willpower{' '}
         </Button>
       </Stack>
     </Card>
