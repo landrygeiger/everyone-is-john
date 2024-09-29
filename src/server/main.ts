@@ -99,8 +99,8 @@ app.post('/api/playerTieRoll', async (req, res) => {
 
 app.post('/api/issueInstruction', async (req, res) => {
   const { instruction } = req.body as IssueInstructionRequest;
-  await setState(userIssuesControlInstruction(instruction));
   console.log(`active Voice issued instruction: ${instruction}`);
+  await setState(userIssuesControlInstruction(instruction));
   res.sendStatus(200);
 });
 
