@@ -9,7 +9,6 @@ import {
 } from 'react';
 import { App } from '../common/types';
 import { io } from 'socket.io-client';
-import { SERVER_ORIGIN } from '../common/config';
 import { fetchZoomJwt } from '../common/api';
 import ZoomVideo from '@zoom/videosdk';
 
@@ -35,7 +34,7 @@ export const StateContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [zoomJwt, setZoomJwt] = useState<string | null>(initial.zoomJwt);
 
   useEffect(() => {
-    io(SERVER_ORIGIN).on('message', setGameState);
+    io(import.meta.env.VITE_SERVER_ORIGIN).on('message', setGameState);
     fetchZoomJwt().then(res => res.json().then(body => setZoomJwt(body.jwt)));
   }, []);
 
