@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Slider, Button, Typography, Stack, Card } from '@mui/joy';
 import { StateContext } from '../State';
 import { submitBid } from '../../common/api';
+import ElectricBolt from '@mui/icons-material/ElectricBolt';
 
 const Bidding: React.FC = () => {
   const appState = useContext(StateContext);
@@ -57,9 +58,15 @@ const Bidding: React.FC = () => {
           variant="solid"
           disabled={disabled}
           onClick={handleConfirm}
-          sx={{ alignSelf: 'flex-end' }}
+          sx={{
+            alignSelf: 'flex-end',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+          }}
         >
-          Bid {betAmount} Willpower{' '}
+          <span>Bid {betAmount} Willpower </span>
+          <ElectricBolt fontSize="small" />
         </Button>
       </Stack>
     </Card>
